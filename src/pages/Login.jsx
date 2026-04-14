@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
   const { login, register, googleLogin } = useAuth()
+  const googleEnabled = String(import.meta.env.VITE_ENABLE_GOOGLE_LOGIN || 'false') === 'true'
   const [mode, setMode] = useState('login')
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [error, setError] = useState('')
@@ -140,15 +141,17 @@ export default function Login() {
             ) : mode === 'login' ? 'Login' : 'Create Account'}
           </button>
 
-          <button
-            type="button"
-            className="auth-google-btn"
-            onClick={handleGoogleLogin}
-            disabled={loading}
-          >
-            <span className="auth-google-btn__icon">G</span>
-            Continue with Google
-          </button>
+          {googleEnabled && (
+            <button
+              type="button"
+              className="auth-google-btn"
+              onClick={handleGoogleLogin}
+              disabled={loading}
+            >
+              <span className="auth-google-btn__icon">G</span>
+              Continue with Google
+            </button>
+          )}
         </form>
 
         <div className="auth-help">

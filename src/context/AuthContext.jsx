@@ -1,7 +1,5 @@
 ﻿import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { onAuthStateChanged } from 'firebase/auth'
 import { api } from '../api'
-import { auth } from '../firebase'
 import { clearAuthData, getAuthData, setAuthData } from '../utils/authStorage'
 
 const AuthContext = createContext(null)
@@ -18,33 +16,37 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    if (!auth) {
-      setBootError('Firebase Auth is not initialized. Check your .env and restart dev server.')
-      setInitializing(false)
-      return () => {}
-    }
+    let active = true
 
-    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (!firebaseUser) {
-        persist(null)
-        setBootError('')
-        setInitializing(false)
+    async function bootstrap() {
+      const cached = getAuthData()
+      if (!cached?.token) {
+        if (active) {
+          setInitializing(false)
+          setBootError('')
+        }
         return
       }
 
       try {
         const me = await api.me()
-        persist(me)
+        if (!active) return
+        persist({ token: cached.token, user: me.user })
         setBootError('')
       } catch (error) {
-        // Keep Firebase session; just surface an explicit boot error.
-        setBootError(error?.message || 'Could not restore your profile session')
+        if (!active) return
+        persist(null)
+        setBootError(error?.message || 'Session expired. Please login again.')
       } finally {
-        setInitializing(false)
+        if (active) setInitializing(false)
       }
-    })
+    }
 
-    return () => unsub()
+    bootstrap()
+
+    return () => {
+      active = false
+    }
   }, [])
 
   const login = async (email, password) => {
@@ -73,6 +75,7 @@ export function AuthProvider({ children }) {
       await api.logout()
     } finally {
       persist(null)
+      setBootError('')
     }
   }
 
@@ -97,4 +100,3 @@ export function useAuth() {
   if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
   return ctx
 }
-
