@@ -36,4 +36,5 @@ module.exports = {
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   TOKEN_SECRET: process.env.TOKEN_SECRET || 'travel-planner-change-this-secret',
   TOKEN_TTL_MS: Number(process.env.TOKEN_TTL_MS || 1000 * 60 * 60 * 24 * 7),
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
 }

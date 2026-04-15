@@ -63,8 +63,8 @@ export function AuthProvider({ children }) {
     return result
   }
 
-  const googleLogin = async () => {
-    const result = await api.loginWithGoogle()
+  const googleLogin = async (googlePayload) => {
+    const result = await api.loginWithGoogle(googlePayload)
     persist(result)
     setBootError('')
     return result

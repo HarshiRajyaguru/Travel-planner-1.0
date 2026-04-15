@@ -1,43 +1,21 @@
 {
-    "name": "travel-planner",
-    "private": true,
-    "version": "0.0.0",
-    "type": "module",
-    "scripts": {
-        "dev": "vite --host",
-        "start": "vite --host",
-        "dev:client": "vite --host",
-        "dev:server": "node server/index.js",
-        "dev:all": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-        "server": "node server/index.js",
-        "start:split": "echo Run 'npm run dev:server' and 'npm run dev:client' in separate terminals",
-        "build": "vite build",
-        "lint": "eslint .",
-        "preview": "vite preview",
-        "firebase:login": "npx firebase-tools login",
-        "firebase:emulators": "npx firebase-tools emulators:start",
-        "firebase:deploy": "npx firebase-tools deploy",
-        "verify:firebase": "node scripts/verify-firebase-env.mjs",
-        "promote-admin": "node scripts/promote-admin.mjs",
-        "preview:host": "vite preview --host --port 4173"
-    },
-    "dependencies": {
-        "firebase": "^12.11.0",
-        "react": "^19.2.4",
-        "react-dom": "^19.2.4",
-        "react-router-dom": "^7.13.2"
-    },
-    "devDependencies": {
-        "@eslint/js": "^9.39.4",
-        "@types/react": "^19.2.14",
-        "@types/react-dom": "^19.2.3",
-        "@vitejs/plugin-react": "^6.0.1",
-        "concurrently": "^9.2.1",
-        "eslint": "^9.39.4",
-        "eslint-plugin-react-hooks": "^7.0.1",
-        "eslint-plugin-react-refresh": "^0.5.2",
-        "firebase-admin": "^13.7.0",
-        "globals": "^17.4.0",
-        "vite": "^8.0.1"
-    }
+  "name": "travel-planner-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev:all": "concurrently -n frontend,backend -c cyan,magenta \"npm --prefix frontend run dev\" \"npm --prefix backend run start\"",
+    "dev:client": "npm --prefix frontend run dev",
+    "dev:server": "npm --prefix backend run start",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview",
+    "lint": "npm --prefix frontend run lint",
+    "verify:firebase": "npm --prefix frontend run verify:firebase",
+    "promote-admin": "npm --prefix frontend run promote-admin",
+    "firebase:login": "npm --prefix frontend run firebase:login",
+    "firebase:emulators": "npm --prefix frontend run firebase:emulators",
+    "firebase:deploy": "npm --prefix frontend run firebase:deploy"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

@@ -1,6 +1,23 @@
-﻿import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import {
+  GoogleAuthProvider,
+  getRedirectResult,
+  signInWithPopup,
+  signInWithRedirect,
+} from 'firebase/auth'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { auth, firebaseConfigError } from '../firebase'
 import { useAuth } from '../context/AuthContext'
+
+function mapGoogleAuthError(err) {
+  const code = String(err?.code || '')
+  if (code === 'auth/popup-closed-by-user') return 'Google popup was closed before sign in finished.'
+  if (code === 'auth/cancelled-popup-request') return 'Another Google sign-in popup is already open.'
+  if (code === 'auth/network-request-failed') return 'Network error during Google sign-in. Please check your connection.'
+  if (code === 'auth/unauthorized-domain') return 'This domain is not authorized in Firebase Auth settings.'
+  if (code === 'auth/operation-not-allowed') return 'Google login is not enabled in Firebase Authentication.'
+  return err?.message || 'Google login failed.'
+}
 
 export default function Login() {
   const { login, register, googleLogin } = useAuth()
@@ -15,6 +32,59 @@ export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const destination = location.state?.from || '/dashboard'
+  const googleProvider = useMemo(() => {
+    const provider = new GoogleAuthProvider()
+    provider.setCustomParameters({ prompt: 'select_account' })
+    return provider
+  }, [])
+
+  const exchangeGoogleCredential = async (result) => {
+    const googleUser = result?.user
+    if (!googleUser) {
+      throw new Error('Google sign-in did not return a user. Please try again.')
+    }
+
+    const idToken = await googleUser.getIdToken()
+    const credential = GoogleAuthProvider.credentialFromResult(result)
+    const accessToken = credential?.accessToken || null
+
+    await googleLogin({
+      idToken,
+      accessToken,
+      email: googleUser.email || null,
+      name: googleUser.displayName || null,
+      photoURL: googleUser.photoURL || null,
+    })
+  }
+
+  useEffect(() => {
+    if (!googleEnabled || !auth) return
+
+    let active = true
+    const handleGoogleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth)
+        if (!active || !result) return
+
+        setLoading(true)
+        setError('')
+        setSuccess('')
+        await exchangeGoogleCredential(result)
+        setSuccess('Logged in with Google.')
+        navigate(destination, { replace: true })
+      } catch (err) {
+        if (!active) return
+        setError(mapGoogleAuthError(err))
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    handleGoogleRedirectResult()
+    return () => {
+      active = false
+    }
+  }, [destination, googleEnabled, googleProvider, navigate])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -42,12 +112,37 @@ export default function Login() {
     setError('')
     setSuccess('')
     setLoading(true)
+
+    if (firebaseConfigError || !auth) {
+      setError(firebaseConfigError || 'Firebase auth is not initialized. Cannot continue with Google.')
+      setLoading(false)
+      return
+    }
+
     try {
-      await googleLogin()
+      const popupResult = await signInWithPopup(auth, googleProvider)
+      await exchangeGoogleCredential(popupResult)
       setSuccess('Logged in with Google.')
       navigate(destination, { replace: true })
     } catch (err) {
-      setError(err.message || 'Google login failed')
+      const code = String(err?.code || '')
+      const shouldFallbackToRedirect = (
+        code === 'auth/popup-blocked'
+        || code === 'auth/operation-not-supported-in-this-environment'
+      )
+
+      if (shouldFallbackToRedirect) {
+        try {
+          await signInWithRedirect(auth, googleProvider)
+          return
+        } catch (redirectErr) {
+          setError(mapGoogleAuthError(redirectErr))
+          setLoading(false)
+          return
+        }
+      }
+
+      setError(mapGoogleAuthError(err))
     } finally {
       setLoading(false)
     }
@@ -152,6 +247,12 @@ export default function Login() {
               Continue with Google
             </button>
           )}
+
+          {googleEnabled && (
+            <p className="auth-google-note">
+              Secure Google sign-in with backend token exchange.
+            </p>
+          )}
         </form>
 
         <div className="auth-help">
@@ -162,4 +263,3 @@ export default function Login() {
     </div>
   )
 }
-

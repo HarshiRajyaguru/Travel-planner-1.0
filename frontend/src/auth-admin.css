@@ -238,6 +238,13 @@
   color: #ffffff;
 }
 
+.auth-google-note {
+  margin: 2px 2px 0;
+  color: #475569;
+  font-size: 12px;
+  text-align: center;
+}
+
 .loading-inline {
   display: inline-flex;
   align-items: center;

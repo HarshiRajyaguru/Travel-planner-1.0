@@ -80,11 +80,25 @@ export const api = {
     })
   }),
 
-  loginWithGoogle: () => withFriendlyErrors(async () => {
+  loginWithGoogle: (googlePayload = {}) => withFriendlyErrors(async () => {
+    const {
+      idToken = null,
+      accessToken = null,
+      email = null,
+      name = null,
+      photoURL = null,
+    } = googlePayload || {}
+
     const payload = await request('/api/auth/google', {
       method: 'POST',
       auth: false,
-      body: {},
+      body: {
+        idToken,
+        accessToken,
+        email,
+        name,
+        photoURL,
+      },
     }).catch((err) => {
       if (err?.status === 404 || err?.status === 405) {
         const unsupported = new Error('Google login is not enabled on this backend yet.')

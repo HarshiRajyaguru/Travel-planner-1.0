@@ -1,82 +1,48 @@
-﻿# Travel Planner (React + Firebase)
+# Travel Planner
 
-Travel planner with Firebase Authentication, Firestore trip storage, and admin dashboard support.
+Travel planner web app with React + Vite frontend and API backend support.
 
-## Stack
+## Project Structure
 
-- React + Vite
-- Firebase Auth (Email/Password)
-- Firestore
-- Firebase Admin SDK helper script (custom admin claims)
+- `frontend/` - React + Vite app
+- `backend/` - Express REST API
+- `runlogs/` - runtime logs
 
-## Setup
+## Quick Run (Dev)
 
-1. Install deps
 ```bash
 npm install
+copy frontend\.env.example frontend\.env
+npm run dev:all
 ```
 
-2. Create env file
-```bash
-copy .env.example .env
-```
+`dev:all` starts both:
+- Frontend (`frontend`, Vite) on `http://localhost:5173`
+- Backend (`backend`, Express) on its configured port
 
-3. Fill `.env` values from Firebase Web App config.
+If you prefer split terminals:
+- `npm run dev:client`
+- `npm run dev:server`
 
-4. Verify env values
-```bash
-npm run verify:firebase
-```
+## Required Env (Render Backend + Google Login)
 
-5. In Firebase Console:
-- Enable Email/Password sign-in
-- Create Firestore database
-- Publish rules from `firestore.rules`
+Frontend `.env` (in `frontend/.env`):
+- `VITE_API_BASE_URL`: backend base URL (example: `https://travel-planner-1-0.onrender.com`)
+- `VITE_ENABLE_GOOGLE_LOGIN`: `true` to show Google login button, `false` to hide
 
-6. Run app
-```bash
-npm run dev
-```
+Backend env on Render must also be configured for Google OAuth if enabled:
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `GOOGLE_CALLBACK_URL` (or backend-specific callback variable)
+- `JWT_SECRET`
+- CORS allowlist including your frontend origin
 
-Open: `http://localhost:5173`
+## Scripts
 
-## Admin Access
-
-### Option A (quick)
-Set `VITE_ADMIN_EMAIL` in `.env`.
-
-### Option B (recommended secure)
-Use Firebase custom claims.
-
-1. Download Firebase service-account JSON from Firebase Console.
-2. Set environment variable:
-```bash
-set GOOGLE_APPLICATION_CREDENTIALS=C:\path\to\service-account.json
-```
-3. Promote user:
-```bash
-npm run promote-admin -- user@example.com
-```
-4. Re-login that user.
-
-## Firebase Rules/Deploy Files
-
-- `firestore.rules`
-- `firestore.indexes.json`
-- `firebase.json`
-- `.firebaserc.example`
-
-## Useful Scripts
-
-- `npm run dev`
-- `npm run build`
-- `npm run verify:firebase`
-- `npm run promote-admin -- user@example.com`
-- `npm run firebase:login`
-- `npm run firebase:emulators`
-- `npm run firebase:deploy`
-
-## Notes
-
-- Frontend is fully Firebase-driven now.
-- Express backend files remain in repo but are not required for auth/trip flow.
+- `npm run dev` - frontend only
+- `npm run start` - frontend only
+- `npm run dev:client` - frontend only
+- `npm run dev:server` - backend only
+- `npm run dev:all` - frontend + backend together
+- `npm run build` - frontend production build
+- `npm run preview` - frontend preview build
