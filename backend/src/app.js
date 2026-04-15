@@ -1,6 +1,6 @@
-﻿const express = require('express')
+const express = require('express')
 const cors = require('cors')
-const { CLIENT_ORIGIN } = require('./config/env')
+const { CLIENT_ORIGINS } = require('./config/env')
 const { requestLogger } = require('./middlewares/requestLogger')
 const { notFoundHandler, errorHandler } = require('./middlewares/errorMiddleware')
 
@@ -11,7 +11,13 @@ const adminRoutes = require('./routes/adminRoutes')
 
 const app = express()
 
-app.use(cors({ origin: CLIENT_ORIGIN }))
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin) return callback(null, true)
+    if (CLIENT_ORIGINS.includes(origin)) return callback(null, true)
+    return callback(new Error(`Origin not allowed by CORS: ${origin}`))
+  },
+}))
 app.use(express.json({ limit: '1mb' }))
 app.use(requestLogger)
 

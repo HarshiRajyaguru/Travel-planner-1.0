@@ -34,6 +34,10 @@ module.exports = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: Number(process.env.PORT || 3001),
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  CLIENT_ORIGINS: String(process.env.CLIENT_ORIGIN || 'http://localhost:5173')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean),
   TOKEN_SECRET: process.env.TOKEN_SECRET || 'travel-planner-change-this-secret',
   TOKEN_TTL_MS: Number(process.env.TOKEN_TTL_MS || 1000 * 60 * 60 * 24 * 7),
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',

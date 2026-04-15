@@ -46,3 +46,32 @@ Backend env on Render must also be configured for Google OAuth if enabled:
 - `npm run dev:all` - frontend + backend together
 - `npm run build` - frontend production build
 - `npm run preview` - frontend preview build
+
+## Deploy (Recommended: Vercel + Railway)
+
+1. Deploy backend (`backend/`) on Railway
+- Create new Railway project from GitHub repo.
+- Set Root Directory to `backend`.
+- Add environment variables:
+  - `PORT=3001`
+  - `NODE_ENV=production`
+  - `TOKEN_SECRET=<strong-random-secret>`
+  - `TOKEN_TTL_MS=604800000`
+  - `GOOGLE_CLIENT_ID=<optional-if-google-login-enabled>`
+  - `CLIENT_ORIGIN=https://<your-vercel-app>.vercel.app`
+- Deploy and copy backend public URL, e.g. `https://your-backend.up.railway.app`
+
+2. Deploy frontend (`frontend/`) on Vercel
+- Import the same GitHub repo in Vercel.
+- Set Root Directory to `frontend`.
+- Build command: `npm run build`
+- Output directory: `dist`
+- Environment variables:
+  - `VITE_API_BASE_URL=https://your-backend.up.railway.app`
+  - `VITE_ENABLE_GOOGLE_LOGIN=false` (or `true` if configured)
+- Deploy and copy frontend URL.
+
+3. Final CORS update on Railway
+- Update backend `CLIENT_ORIGIN` to your exact Vercel URL.
+- If you use preview deployments too, add them comma-separated:
+  - `CLIENT_ORIGIN=https://app.vercel.app,https://app-git-main-user.vercel.app`
