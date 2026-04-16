@@ -1,6 +1,6 @@
 ﻿import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 
 const FEATURES = [
   { icon: 'Map', title: 'Plan Trips', desc: 'Add destinations, dates, and trip types in one place.' },

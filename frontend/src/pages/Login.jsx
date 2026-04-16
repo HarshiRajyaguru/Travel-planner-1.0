@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   GoogleAuthProvider,
   getRedirectResult,
@@ -7,7 +7,7 @@ import {
 } from 'firebase/auth'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { auth, firebaseConfigError } from '../firebase'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 
 function mapGoogleAuthError(err) {
   const code = String(err?.code || '')
@@ -38,7 +38,7 @@ export default function Login() {
     return provider
   }, [])
 
-  const exchangeGoogleCredential = async (result) => {
+  const exchangeGoogleCredential = useCallback(async (result) => {
     const googleUser = result?.user
     if (!googleUser) {
       throw new Error('Google sign-in did not return a user. Please try again.')
@@ -55,7 +55,7 @@ export default function Login() {
       name: googleUser.displayName || null,
       photoURL: googleUser.photoURL || null,
     })
-  }
+  }, [googleLogin])
 
   useEffect(() => {
     if (!googleEnabled || !auth) return
@@ -84,7 +84,7 @@ export default function Login() {
     return () => {
       active = false
     }
-  }, [destination, googleEnabled, googleProvider, navigate])
+  }, [destination, exchangeGoogleCredential, googleEnabled, googleProvider, navigate])
 
   const handleSubmit = async (event) => {
     event.preventDefault()

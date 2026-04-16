@@ -29,7 +29,7 @@ const firebaseConfig = {
 
 const app = firebaseConfigError ? null : initializeApp(firebaseConfig)
 const auth = app ? getAuth(app) : null
-const db = app ? getFirestore(app) : null
+const db = null // Firestore not needed - using backend API for trips data
 
 const analytics = app && typeof window !== 'undefined'
   ? analyticsSupported().then((ok) => (ok ? getAnalytics(app) : null)).catch(() => null)

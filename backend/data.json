@@ -39,7 +39,17 @@
       "salt": "c03058ec881e5cc19ca295b9c64a3ea6",
       "role": "admin",
       "createdAt": "2026-04-06T16:38:12.987Z"
+    },
+    {
+      "id": 2,
+      "name": "jay memakiya",
+      "email": "jaymemakiya925@gmail.com",
+      "passwordHash": "f1884f5c5eeaa66f685bbbaabf326e61264f37231f74d500f140ac13aec1b0396350b9ffe2e44b5d9db722d1bac960057fef65de21e679d4454af4c9ad28372b",
+      "salt": "4456684527cf548f35d5edbd24f3790c",
+      "role": "user",
+      "provider": "local",
+      "createdAt": "2026-04-16T04:27:25.046Z"
     }
   ],
-  "nextUserId": 2
+  "nextUserId": 3
 }

@@ -3,7 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev:all": "concurrently -n frontend,backend -c cyan,magenta \"npm --prefix frontend run dev\" \"npm --prefix backend run start\"",
+    "dev": "npm --prefix frontend run dev",
+    "dev:all": "npm --prefix frontend run dev",
     "dev:client": "npm --prefix frontend run dev",
     "dev:server": "npm --prefix backend run start",
     "build": "npm --prefix frontend run build",
